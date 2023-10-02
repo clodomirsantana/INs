@@ -74,7 +74,6 @@ class BCSO(object):
             cat = Cat(self.dim)
             cat.cost, cat.test_acc, cat.train_acc, cat.features = self.objective_function.evaluate(cat.pos)
             cat.prob = 1.0 / self.swarm_size
-            self.eval_track_update()
             if self.best_agent.cost > cat.cost:
                 self.best_agent = copy.deepcopy(cat)
             self.swarm.append(cat)
@@ -85,33 +84,20 @@ class BCSO(object):
         self.best_agent = None
         self.swarm = []
         self.start_time = time.time()
-        self.optimum_cost_tracking_eval = []
         self.optimum_cost_tracking_iter = []
-
-        self.optimum_train_acc_tracking_eval = []
-        self.optimum_train_acc_tracking_iter = []
-
-        self.optimum_test_acc_tracking_eval = []
-        self.optimum_test_acc_tracking_iter = []
-
-        self.optimum_features_tracking_eval = []
-        self.optimum_features_tracking_iter = []
-
-        self.execution_time_tracking_eval = []
+        self.swarm_cost_tracking_iter = []
+        self.curr_best_cost_tracking_iter = []
+        self.curr_worst_cost_tracking_iter = []
         self.execution_time_tracking_iter = []
-
-    def eval_track_update(self):
-        self.optimum_cost_tracking_eval.append(self.best_agent.cost)
-        self.optimum_train_acc_tracking_eval.append(self.best_agent.train_acc)
-        self.optimum_test_acc_tracking_eval.append(self.best_agent.test_acc)
-        self.optimum_features_tracking_eval.append(self.best_agent.features)
-        self.execution_time_tracking_eval.append(time.time() - self.start_time)
+        self.pos_diff_mean_iter = []
 
     def iter_track_update(self):
         self.optimum_cost_tracking_iter.append(self.best_agent.cost)
-        self.optimum_train_acc_tracking_iter.append(self.best_agent.train_acc)
-        self.optimum_test_acc_tracking_iter.append(self.best_agent.test_acc)
-        self.optimum_features_tracking_iter.append(self.best_agent.features)
+        self.swarm_cost_tracking_iter.append(np.mean([p.cost for p in self.swarm]))
+        self.curr_best_cost_tracking_iter.append(np.min([p.cost for p in self.swarm]))
+        self.curr_worst_cost_tracking_iter.append(np.max([p.cost for p in self.swarm]))
+        pos_diff = [np.abs(np.linalg.norm(p.pos - self.best_agent.pos)) for p in self.swarm]
+        self.pos_diff_mean_iter.append(np.mean(pos_diff))
         self.execution_time_tracking_iter.append(time.time() - self.start_time)
 
     def update_best_cat(self):
@@ -148,7 +134,6 @@ class BCSO(object):
                 for c in copies:
                     self.mutate(c)
                     c.cost, c.test_acc, c.train_acc, c.features = self.objective_function.evaluate(c.pos)
-                    self.eval_track_update()
                 self.calculate_probabilities(copies)
                 selected_cat = self.roulette_wheel(copies)
                 self.swarm[cat] = copy.deepcopy(copies[selected_cat])

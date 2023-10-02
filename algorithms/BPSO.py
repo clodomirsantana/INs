@@ -75,6 +75,7 @@ class BPSO(object):
 
         self.start_time = None
 
+        # Variables that store of state
         self.optimum_cost_tracking_iter = []
         self.swarm_cost_tracking_iter = []
         self.curr_best_cost_tracking_iter = []
@@ -85,18 +86,13 @@ class BPSO(object):
         self.best_agent = None
         self.inet = []
 
-    def __eval_track_update(self):
-        self.optimum_cost_tracking_eval.append(self.best_agent.cost)
-        self.optimum_train_acc_tracking_eval.append(self.best_agent.train_acc)
-        self.optimum_test_acc_tracking_eval.append(self.best_agent.test_acc)
-        self.optimum_features_tracking_eval.append(self.best_agent.features)
-        self.execution_time_tracking_eval.append(time.time() - self.start_time)
-
     def __iter_track_update(self):
         self.optimum_cost_tracking_iter.append(self.best_agent.cost)
-        self.optimum_train_acc_tracking_iter.append(self.best_agent.train_acc)
-        self.optimum_test_acc_tracking_iter.append(self.best_agent.test_acc)
-        self.optimum_features_tracking_iter.append(self.best_agent.features)
+        self.swarm_cost_tracking_iter.append(np.mean([p.cost for p in self.swarm]))
+        self.curr_best_cost_tracking_iter.append(np.min([p.cost for p in self.swarm]))
+        self.curr_worst_cost_tracking_iter.append(np.max([p.cost for p in self.swarm]))
+        pos_diff = [np.abs(np.linalg.norm(p.pos - self.best_agent.pos)) for p in self.swarm]
+        self.pos_diff_mean_iter.append(np.mean(pos_diff))
         self.execution_time_tracking_iter.append(time.time() - self.start_time)
 
     def __init_swarm(self):
@@ -145,7 +141,6 @@ class BPSO(object):
 
     def __evaluate(self, fitness, op, particle):
         particle.cost, particle.test_acc, particle.train_acc, particle.features = fitness.evaluate(particle.pos)
-        self.__eval_track_update()
         particle.pbest_cost = op(particle.cost, particle.pbest_cost)
         if particle.pbest_cost == particle.cost:
             particle.pbest_pos = particle.pos

@@ -68,6 +68,7 @@ class BGA(object):
         self.pos_diff_mean_iter = []
 
         self.inet = []
+        self.genes = []
 
     def __initialize_population(self):
         self.genes = []
@@ -84,23 +85,25 @@ class BGA(object):
                 self.__set_mutation_op(self.mutation_op, g)
 
         self.start_time = time.time()
-        self.optimum_cost_tracking_eval = []
-        self.optimum_cost_tracking_iter = []
-
-        self.optimum_train_acc_tracking_eval = []
-        self.optimum_train_acc_tracking_iter = []
-
-        self.optimum_test_acc_tracking_eval = []
-        self.optimum_test_acc_tracking_iter = []
-
-        self.optimum_features_tracking_eval = []
-        self.optimum_features_tracking_iter = []
-
-        self.execution_time_tracking_eval = []
-        self.execution_time_tracking_iter = []
 
         self.best_agent = np.random.choice(self.genes)
         self.inet = InteractionNetwork(self.pop_size, directed=True, output_dir=self.output_dir)
+
+        self.optimum_cost_tracking_iter = []
+        self.swarm_cost_tracking_iter = []
+        self.curr_best_cost_tracking_iter = []
+        self.curr_worst_cost_tracking_iter = []
+        self.execution_time_tracking_iter = []
+        self.pos_diff_mean_iter = []
+
+    def __iter_track_update(self):
+        self.optimum_cost_tracking_iter.append(self.best_agent.cost)
+        self.swarm_cost_tracking_iter.append(np.mean([p.cost for p in self.genes]))
+        self.curr_best_cost_tracking_iter.append(np.min([p.cost for p in self.genes]))
+        self.curr_worst_cost_tracking_iter.append(np.max([p.cost for p in self.genes]))
+        pos_diff = [np.abs(np.linalg.norm(p.pos - self.best_agent.pos)) for p in self.genes]
+        self.pos_diff_mean_iter.append(np.mean(pos_diff))
+        self.execution_time_tracking_iter.append(time.time() - self.start_time)
 
     def best(self):
         return self.best_agent.pos
@@ -110,20 +113,6 @@ class BGA(object):
 
     def set_mutation_operator(self, op):
         self.mutation_op = op
-
-    def __eval_track_update(self):
-        self.optimum_cost_tracking_eval.append(self.best_agent.cost)
-        self.optimum_train_acc_tracking_eval.append(self.best_agent.train_acc)
-        self.optimum_test_acc_tracking_eval.append(self.best_agent.test_acc)
-        self.optimum_features_tracking_eval.append(self.best_agent.features)
-        self.execution_time_tracking_eval.append(time.time() - self.start_time)
-
-    def __iter_track_update(self):
-        self.optimum_cost_tracking_iter.append(self.best_agent.cost)
-        self.optimum_train_acc_tracking_iter.append(self.best_agent.train_acc)
-        self.optimum_test_acc_tracking_iter.append(self.best_agent.test_acc)
-        self.optimum_features_tracking_iter.append(self.best_agent.features)
-        self.execution_time_tracking_iter.append(time.time() - self.start_time)
 
     def __evaluate_population(self):
         for g in self.genes:
@@ -188,7 +177,6 @@ class BGA(object):
         genome.mutation_op = op
 
     def __evaluate(self, fitness, genome):
-        self.__eval_track_update()
         genome.cost, genome.test_acc, genome.train_acc, genome.features = fitness.evaluate(genome.pos)
 
     @staticmethod

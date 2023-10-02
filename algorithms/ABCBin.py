@@ -67,33 +67,21 @@ class ABCBin(object):
         self.best_agent = None
         self.food_sources = []
         self.start_time = time.time()
-        self.optimum_cost_tracking_eval = []
+
         self.optimum_cost_tracking_iter = []
-
-        self.optimum_train_acc_tracking_eval = []
-        self.optimum_train_acc_tracking_iter = []
-
-        self.optimum_test_acc_tracking_eval = []
-        self.optimum_test_acc_tracking_iter = []
-
-        self.optimum_features_tracking_eval = []
-        self.optimum_features_tracking_iter = []
-
-        self.execution_time_tracking_eval = []
+        self.swarm_cost_tracking_iter = []
+        self.curr_best_cost_tracking_iter = []
+        self.curr_worst_cost_tracking_iter = []
         self.execution_time_tracking_iter = []
-
-    def eval_track_update(self):
-        self.optimum_cost_tracking_eval.append(self.best_agent.cost)
-        self.optimum_train_acc_tracking_eval.append(self.best_agent.train_acc)
-        self.optimum_test_acc_tracking_eval.append(self.best_agent.test_acc)
-        self.optimum_features_tracking_eval.append(self.best_agent.features)
-        self.execution_time_tracking_eval.append(time.time() - self.start_time)
+        self.pos_diff_mean_iter = []
 
     def iter_track_update(self):
         self.optimum_cost_tracking_iter.append(self.best_agent.cost)
-        self.optimum_train_acc_tracking_iter.append(self.best_agent.train_acc)
-        self.optimum_test_acc_tracking_iter.append(self.best_agent.test_acc)
-        self.optimum_features_tracking_iter.append(self.best_agent.features)
+        self.swarm_cost_tracking_iter.append(np.mean([p.cost for p in self.food_sources]))
+        self.curr_best_cost_tracking_iter.append(np.min([p.cost for p in self.food_sources]))
+        self.curr_worst_cost_tracking_iter.append(np.max([p.cost for p in self.food_sources]))
+        pos_diff = [np.abs(np.linalg.norm(p.pos - self.best_agent.pos)) for p in self.food_sources]
+        self.pos_diff_mean_iter.append(np.mean(pos_diff))
         self.execution_time_tracking_iter.append(time.time() - self.start_time)
 
     def gen_pos(self):
@@ -121,7 +109,6 @@ class ABCBin(object):
         bee.pos = pos
         bee.cost, bee.test_acc, bee.train_acc, bee.features = self.objective_function.evaluate(
             self.mapping_abcbin(bee.pos))
-        self.eval_track_update()
         bee.fitness = self.calculate_fitness(bee.cost)
         return bee
 
@@ -156,7 +143,6 @@ class ABCBin(object):
             new_pos[j] = self.food_sources[bee].pos[j] + phi * (
                     self.food_sources[bee].pos[j] - self.food_sources[k].pos[j])
             cost, test_acc, train_acc, features = self.objective_function.evaluate(self.mapping_abcbin(new_pos))
-            self.eval_track_update()
             fit = self.calculate_fitness(cost)
 
             if fit < self.food_sources[bee].fitness:
@@ -196,7 +182,6 @@ class ABCBin(object):
                 new_pos[j] = new_pos[j] + phi * (new_pos[j] - self.food_sources[k].pos[j])
 
                 cost, test_acc, train_acc, features = self.objective_function.evaluate(self.mapping_abcbin(new_pos))
-                self.eval_track_update()
                 fit = self.calculate_fitness(cost)
 
                 if fit < self.food_sources[s].fitness:
@@ -233,7 +218,6 @@ class ABCBin(object):
             self.food_sources[max_].trials = 0
             self.food_sources[max_].cost, self.food_sources[max_].test_acc, self.food_sources[max_].train_acc, \
                 self.food_sources[max_].features = self.objective_function.evaluate(pos)
-            self.eval_track_update()
 
     def optimize(self):
         self.init_colony()
