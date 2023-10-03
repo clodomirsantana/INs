@@ -196,7 +196,7 @@ def get_id_data(dicts_execs):
 
 def plot_id_curves(res_id, show_std=False):
     num_alg = len(res_id)
-    fig, axes = plt.subplots(nrows=(num_alg // 4), ncols=4, figsize=(12 * 4, 10 * (num_alg // 4)))
+    fig, axes = plt.subplots(nrows=(num_alg // 2), ncols=2, figsize=(12 * 2, 10 * (num_alg // 2)))
     idx = 0
     for alg_name, values in res_id.items():
         means = values[:len(values) // 2]
@@ -206,13 +206,13 @@ def plot_id_curves(res_id, show_std=False):
                 std_u = y - stds[n]
                 std_l = y + stds[n]
                 norm_std = [max([np.abs(std_u[i]), np.abs(std_l[i])]) for i in range(len(y))]
-                axes[idx // 4][idx % 4].plot(y / max(norm_std), color=color, linewidth=5.0)
-                axes[idx // 4][idx % 4].fill_between(range(len(y)), std_u / max(norm_std), std_l / max(norm_std),
+                axes[idx // 2][idx % 2].plot(y / max(norm_std), color=color, linewidth=5.0)
+                axes[idx // 2][idx % 2].fill_between(range(len(y)), std_u / max(norm_std), std_l / max(norm_std),
                                                      color=color, alpha=0.3)
             else:
-                axes[idx // 4][idx % 4].plot(y / max(y), color=color, linewidth=8.0)
+                axes[idx // 2][idx % 2].plot(y / max(y), color=color, linewidth=8.0)
 
-            axes[idx // 4][idx % 4].set_title(alg_name)
+            axes[idx // 2][idx % 2].set_title(alg_name)
 
         idx += 1
     plt.legend(["ID"], fontsize=18, loc='center left', bbox_to_anchor=(1, 0.5))
@@ -457,7 +457,7 @@ def get_network_data(algs_funcs_dict):
 def plot_swarm_curves(res_swarm, show_std=False, log=False):
     plt.rcParams.update({'font.size': 40})
     num_alg = len(res_swarm)
-    fig, axes = plt.subplots(nrows=(num_alg // 4), ncols=4, figsize=(12 * 4, 10 * (num_alg // 4)))
+    fig, axes = plt.subplots(nrows=(num_alg // 2), ncols=2, figsize=(12 * 2, 10 * (num_alg // 2)))
     idx = 0
 
     for alg_name, values in res_swarm.items():
@@ -468,16 +468,16 @@ def plot_swarm_curves(res_swarm, show_std=False, log=False):
                 std_u = y - stds[n]
                 std_l = y + stds[n]
                 norm_std = [max([np.abs(std_u[i]), np.abs(std_l[i])]) for i in range(len(y))]
-                axes[idx // 4][idx % 4].plot(y / max(norm_std), color=color, linewidth=5.0)
-                axes[idx // 4][idx % 4].fill_between(range(len(y)), std_u / max(norm_std), std_l / max(norm_std),
+                axes[idx // 2][idx % 2].plot(y / max(norm_std), color=color, linewidth=5.0)
+                axes[idx // 2][idx % 2].fill_between(range(len(y)), std_u / max(norm_std), std_l / max(norm_std),
                                                      color=color, alpha=0.3)
             else:
-                axes[idx // 4][idx % 4].plot(y / max(y), color=color, linewidth=8.0)
+                axes[idx // 2][idx % 2].plot(y / max(y), color=color, linewidth=8.0)
 
             if log:
-                axes[idx // 4][idx % 4].set_yscale('log')
+                axes[idx // 2][idx % 2].set_yscale('log')
 
-            axes[idx // 4][idx % 4].set_title(alg_name)
+            axes[idx // 2][idx % 2].set_title(alg_name)
         idx += 1
 
     plt.legend(['Best Cost', 'AVG Cost', 'Current Best Cost', 'Current Worst Cost', 'AVG Dist to Best'],
@@ -488,7 +488,7 @@ def plot_network_curves(res_nets, show_std=False, log=True):
     plt.rcParams.update({'font.size': 40})
     num_alg = len(res_nets)
 
-    fig, axes = plt.subplots(nrows=(num_alg // 4), ncols=4, figsize=(12 * 4, 10 * (num_alg // 4)))
+    fig, axes = plt.subplots(nrows=(num_alg // 2), ncols=2, figsize=(12 * 2, 10 * (num_alg // 2)))
     idx = 0
 
     titles = ["Node Degree", "Edge Weight", "Node Value"]
@@ -500,13 +500,13 @@ def plot_network_curves(res_nets, show_std=False, log=True):
                 std_u = y - stds[n]
                 std_l = y + stds[n]
                 norm_std = [max([np.abs(std_u[i]), np.abs(std_l[i])]) for i in range(len(y))]
-                axes[idx // 4][idx % 4].plot(y, color=color, linewidth=5.0)
-                axes[idx // 4][idx % 4].fill_between(range(len(y)), std_u, std_l, color=color, alpha=0.3)
+                axes[idx // 2][idx % 2].plot(y, color=color, linewidth=5.0)
+                axes[idx // 2][idx % 2].fill_between(range(len(y)), std_u, std_l, color=color, alpha=0.3)
             else:
-                axes[idx // 4][idx % 4].plot(y, linewidth=8.0)
+                axes[idx // 2][idx % 2].plot(y, linewidth=8.0)
             if log:
-                axes[idx // 4][idx % 4].set_yscale('log')
-            axes[idx // 4][idx % 4].set_title(alg_name)
+                axes[idx // 2][idx % 2].set_yscale('log')
+            axes[idx // 2][idx % 2].set_title(alg_name)
 
         idx += 1
     plt.legend(titles, fontsize=20, loc='center left', bbox_to_anchor=(1, 0.5))
