@@ -1,7 +1,7 @@
 # Interaction Networks (INs) #
 
 <figure>
-  <img src="example_ins.png" alt="example" width="100%"/>
+  <img src="examples_ins.png" alt="example" width="100%"/>
   <figcaption><b>Fig. 1</b> - Example of interaction networks for the ABC, GA, and PSO. Nodes represent individuals in the population, and edges indicate that two nodes interacted (e.g. shared information)..</figcaption>
 </figure> <br><br><br>
 
