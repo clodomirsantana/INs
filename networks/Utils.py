@@ -98,8 +98,8 @@ def gen_centrality_plot(g, pos, fig, ax):
 
 def gen_interaction_net_plot(g, ax):
     ax.set_title("Interaction Network")
-    matrix_ = nx.to_numpy_matrix(g)
-    matrix_ = [np.array(r)[0] for r in matrix_[:, np.argsort(matrix_.sum(axis=0))]]
+    matrix_ = nx.to_numpy_array(g)
+    matrix_ = [np.array(r) for r in matrix_[:, np.argsort(matrix_.sum(axis=0))]]
     sns.heatmap(matrix_, xticklabels=False, yticklabels=False, cmap=plt.cm.Spectral_r, ax=ax)
     ax.invert_xaxis()
 
@@ -110,7 +110,7 @@ def gen_nodes_strength_plot(g, ax):
         degree = pd.Series(list(dict(g.in_degree).values()), name="Node strength")
     else:
         degree = pd.Series(list(dict(g.degree).values()), name="Node strength")
-    sns.distplot(degree, color="r", ax=ax)
+    sns.distplot(degree, ax=ax)
 
 
 # TODO: Verify method implementation

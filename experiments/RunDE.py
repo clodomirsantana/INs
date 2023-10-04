@@ -15,7 +15,7 @@ def main():
 
     out_dir = "results/"
     funcs = [Sphere]
-    dims = [50]
+    dims = [100]
 
     for func in funcs:
         for d in dims:

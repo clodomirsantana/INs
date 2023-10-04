@@ -17,7 +17,7 @@ def main():
 
     out_dir = "results/"
     funcs = [ZeroOneKnapsack]
-    dims = [10]
+    dims = [100]
 
     for func in funcs:
         for d in dims:

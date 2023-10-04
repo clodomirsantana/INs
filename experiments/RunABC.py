@@ -12,7 +12,7 @@ def main():
     trials_limit = 100
     out_dir = "results/"
 
-    dims = [50]
+    dims = [100]
     funcs = [Sphere]
     search_space_initializer = UniformSSInitializer()
 

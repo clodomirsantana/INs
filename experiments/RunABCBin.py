@@ -11,8 +11,8 @@ def main():
     a_lim = 5.0
     trials_limit = 10
     out_dir = "results/"
-    funcs = [ZeroOneKnapsack, ZeroMax]
-    dims = [10]
+    funcs = [ZeroOneKnapsack]
+    dims = [100]
 
     for func in funcs:
         for d in dims:

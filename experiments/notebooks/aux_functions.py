@@ -388,7 +388,7 @@ def load_data_per_tw(alg, num_execs, num_iter, tw, dim, func, output_dir):
             data = line.split()
             data = data[:num_iter]
             data = [0 if float(x) == float('-inf') else x for x in data]
-            lines.append(np.asarray(data, dtype=np.float))
+            lines.append(np.asarray(data, dtype=float))
 
         lines_mean = np.mean(lines, axis=0)
         lines_std = np.std(lines, axis=0)
